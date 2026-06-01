@@ -4,37 +4,54 @@
 <?import javafx.scene.layout.*?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.phoebus.app.shift.ui.ShiftTableController"
-            prefWidth="800" prefHeight="500">
+            prefWidth="900" prefHeight="560">
 
     <top>
         <VBox>
+            <!-- Active shift banner -->
+            <HBox fx:id="activeBanner" spacing="0"
+                  style="-fx-padding: 6 10 6 10; -fx-background-color: #757575;">
+                <Label fx:id="activeBannerLabel" text="No active shift"
+                       style="-fx-font-weight: bold; -fx-text-fill: white;"/>
+            </HBox>
+
+            <!-- Toolbar -->
             <ToolBar>
                 <Button text="Refresh" onAction="#handleRefresh"/>
                 <Separator/>
-                <Button fx:id="startShiftBtn" text="Start Shift" onAction="#handleStartShift"/>
-                <Button fx:id="endShiftBtn"   text="End Shift"   onAction="#handleEndShift" disable="true"/>
+                <Button fx:id="startShiftBtn" text="Start Shift"  onAction="#handleStartShift"/>
+                <Button fx:id="endShiftBtn"   text="End Shift"    onAction="#handleEndShift"   disable="true"/>
+                <Button fx:id="closeShiftBtn" text="Close Shift"  onAction="#handleCloseShift" disable="true"/>
             </ToolBar>
+
+            <!-- Filter bar -->
+            <HBox spacing="10" alignment="CENTER_LEFT"
+                  style="-fx-padding: 5 8 5 8; -fx-background-color: #f5f5f5;">
+                <Label text="Status:"/>
+                <ComboBox fx:id="filterStatus" prefWidth="120" onAction="#handleFilterChange"/>
+                <Label text="Type:"/>
+                <ComboBox fx:id="filterType"   prefWidth="140" onAction="#handleFilterChange"/>
+                <Button text="Clear" onAction="#handleClearFilters"/>
+            </HBox>
         </VBox>
     </top>
 
     <center>
         <TableView fx:id="shiftTable" BorderPane.alignment="CENTER">
             <columns>
-                <TableColumn fx:id="colId"      text="ID"         prefWidth="60"/>
-                <TableColumn fx:id="colType"     text="Type"       prefWidth="130"/>
-                <TableColumn fx:id="colStatus"   text="Status"     prefWidth="100"/>
-                <TableColumn fx:id="colOwner"    text="Owner"      prefWidth="130"/>
-                <TableColumn fx:id="colStart"    text="Start Date" prefWidth="180"/>
+                <TableColumn fx:id="colId"     text="ID"         prefWidth="60"/>
+                <TableColumn fx:id="colType"   text="Type"       prefWidth="130"/>
+                <TableColumn fx:id="colStatus" text="Status"     prefWidth="100"/>
+                <TableColumn fx:id="colOwner"  text="Owner"      prefWidth="130"/>
+                <TableColumn fx:id="colStart"  text="Start Date" prefWidth="180"/>
             </columns>
             <placeholder>
-                <Label text="No shifts found — click Refresh to load"/>
+                <Label text="No shifts found"/>
             </placeholder>
         </TableView>
     </center>
 
     <bottom>
-        <Label fx:id="statusLabel" style="-fx-padding: 4 8 4 8;">
-            <BorderPane.margin><Insets top="2" bottom="2"/></BorderPane.margin>
-        </Label>
+        <Label fx:id="statusLabel" style="-fx-padding: 4 8 4 8;"/>
     </bottom>
 </BorderPane>
