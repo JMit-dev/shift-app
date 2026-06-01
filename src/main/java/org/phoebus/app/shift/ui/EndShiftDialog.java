@@ -1,21 +1,24 @@
 package org.phoebus.app.shift.ui;
 
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import org.phoebus.shift.client.ShiftClient;
+import org.phoebus.shift.client.ShiftClientException;
 import org.phoebus.shift.client.model.Shift;
 
 import java.text.SimpleDateFormat;
 
 /**
- * Confirmation dialog for ending the selected shift.
- * Returns true if the user confirmed, false/empty if cancelled.
+ * Confirmation dialog for ending the selected shift. Calls the shift service
+ * on OK and returns the updated Shift, or empty if cancelled or call failed.
  */
-public class EndShiftDialog extends Dialog<Boolean> {
+public class EndShiftDialog extends Dialog<Shift> {
 
-    public EndShiftDialog(Shift shift) {
+    public EndShiftDialog(Shift shift, ShiftClient client) {
         setTitle("End Shift");
         setHeaderText("End this shift?");
 
@@ -35,6 +38,15 @@ public class EndShiftDialog extends Dialog<Boolean> {
 
         getDialogPane().setContent(content);
 
-        setResultConverter(button -> button == ButtonType.OK);
+        setResultConverter(button -> {
+            if (button != ButtonType.OK) return null;
+            try {
+                return client.endShift(shift.getId());
+            } catch (ShiftClientException e) {
+                new Alert(Alert.AlertType.ERROR,
+                        "Failed to end shift: " + e.getMessage()).showAndWait();
+                return null;
+            }
+        });
     }
 }

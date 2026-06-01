@@ -8,26 +8,29 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import org.phoebus.shift.client.ShiftClient;
+import org.phoebus.shift.client.ShiftClientException;
+import org.phoebus.shift.client.model.Shift;
 import org.phoebus.shift.client.model.ShiftType;
 
 import java.util.List;
 
 /**
- * Dialog for starting a new shift. Returns a String summary of the started shift
- * (type + owner) if the user confirms, or nothing if they cancel.
+ * Dialog for starting a new shift. Calls the shift service on OK and returns
+ * the created Shift, or empty if the user cancelled or the call failed.
  */
-public class StartShiftDialog extends Dialog<String> {
+public class StartShiftDialog extends Dialog<Shift> {
 
     private final ComboBox<String> typeCombo = new ComboBox<>();
     private final TextField ownerField = new TextField();
+    private final ShiftClient client;
 
     public StartShiftDialog(ShiftClient client) {
+        this.client = client;
         setTitle("Start Shift");
         setHeaderText("Enter details for the new shift");
 
         getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-        // Populate shift types from service; fall back to a default list on error
         try {
             List<ShiftType> types = client.listTypes();
             types.forEach(t -> typeCombo.getItems().add(t.getName()));
@@ -50,10 +53,14 @@ public class StartShiftDialog extends Dialog<String> {
         getDialogPane().setContent(grid);
 
         setResultConverter(button -> {
-            if (button == ButtonType.OK) {
-                return typeCombo.getValue() + " / " + ownerField.getText();
+            if (button != ButtonType.OK) return null;
+            try {
+                return client.startShift(typeCombo.getValue(), ownerField.getText().trim());
+            } catch (ShiftClientException e) {
+                new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR,
+                        "Failed to start shift: " + e.getMessage()).showAndWait();
+                return null;
             }
-            return null;
         });
     }
 }

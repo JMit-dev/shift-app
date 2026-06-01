@@ -62,6 +62,8 @@ public class ShiftTableController {
                 .username(System.getProperty("shift.username", ""))
                 .password(System.getProperty("shift.password", ""))
                 .build();
+
+        handleRefresh();
     }
 
     @FXML
@@ -82,8 +84,9 @@ public class ShiftTableController {
 
     @FXML
     private void handleStartShift() {
-        new StartShiftDialog(shiftClient).showAndWait().ifPresent(result -> {
-            setStatus("Shift started: " + result);
+        new StartShiftDialog(shiftClient).showAndWait().ifPresent(created -> {
+            setStatus("Shift started: id=" + created.getId() + ", type=" +
+                    (created.getType() != null ? created.getType().getName() : ""));
             handleRefresh();
         });
     }
@@ -93,11 +96,9 @@ public class ShiftTableController {
         Shift selected = shiftTable.getSelectionModel().getSelectedItem();
         if (selected == null) return;
 
-        new EndShiftDialog(selected).showAndWait().ifPresent(confirmed -> {
-            if (confirmed) {
-                setStatus("Shift ended: id=" + selected.getId());
-                handleRefresh();
-            }
+        new EndShiftDialog(selected, shiftClient).showAndWait().ifPresent(ended -> {
+            setStatus("Shift ended: id=" + ended.getId());
+            handleRefresh();
         });
     }
 
