@@ -22,6 +22,9 @@
                 <Button fx:id="startShiftBtn" text="Start Shift"  onAction="#handleStartShift"/>
                 <Button fx:id="endShiftBtn"   text="End Shift"    onAction="#handleEndShift"   disable="true"/>
                 <Button fx:id="closeShiftBtn" text="Close Shift"  onAction="#handleCloseShift" disable="true"/>
+                <Separator/>
+                <Button text="Search"      onAction="#handleSearch"/>
+                <Button text="Preferences" onAction="#handlePreferences"/>
             </ToolBar>
 
             <!-- Filter bar -->

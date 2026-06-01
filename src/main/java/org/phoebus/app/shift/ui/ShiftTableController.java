@@ -76,11 +76,7 @@ public class ShiftTableController {
         filterStatus.getSelectionModel().selectFirst();
         filterType.getSelectionModel().selectFirst();
 
-        shiftClient = ShiftClient.builder()
-                .baseUrl(System.getProperty("shift.url", "http://localhost:8282/Shift/resources"))
-                .username(System.getProperty("shift.username", ""))
-                .password(System.getProperty("shift.password", ""))
-                .build();
+        shiftClient = buildClient();
 
         handleRefresh();
     }
@@ -197,6 +193,35 @@ public class ShiftTableController {
             setStatus("Shift closed: id=" + closed.getId());
             handleRefresh();
         });
+    }
+
+    @FXML
+    private void handleSearch() {
+        new SearchShiftsDialog(shiftClient).showAndWait().ifPresent(found -> {
+            if (!found.isEmpty()) {
+                allShifts.setAll(found);
+                updateActiveBanner(found);
+                setStatus("Search returned " + found.size() + " shift(s)");
+            }
+        });
+    }
+
+    @FXML
+    private void handlePreferences() {
+        new PreferencesDialog().showAndWait().ifPresent(saved -> {
+            if (saved) {
+                shiftClient = buildClient();
+                handleRefresh();
+            }
+        });
+    }
+
+    private ShiftClient buildClient() {
+        return ShiftClient.builder()
+                .baseUrl(ShiftPreferences.getShiftUrl())
+                .username(ShiftPreferences.getUsername())
+                .password(ShiftPreferences.getPassword())
+                .build();
     }
 
     private void setStatus(String message) {
