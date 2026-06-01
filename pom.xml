@@ -14,6 +14,10 @@
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <javafx.version>17.0.11</javafx.version>
+    <!-- Override on the command line: mvn javafx:run -Dshift.url=http://... -->
+    <shift.url>http://localhost:8282/Shift/resources</shift.url>
+    <shift.username></shift.username>
+    <shift.password></shift.password>
   </properties>
 
   <dependencies>
@@ -42,6 +46,11 @@
         <version>0.0.8</version>
         <configuration>
           <mainClass>org.phoebus.app.shift.ShiftApp</mainClass>
+          <options>
+            <option>-Dshift.url=${shift.url}</option>
+            <option>-Dshift.username=${shift.username}</option>
+            <option>-Dshift.password=${shift.password}</option>
+          </options>
         </configuration>
       </plugin>
     </plugins>
